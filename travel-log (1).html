@@ -1,0 +1,1630 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#14335B;
+    --ink-70:#3F5C7A;
+    --paper:#E9F3FC;
+    --paper-2:#D7E9F8;
+    --stamp:#2563EB;
+    --gold:#38BDF8;
+    --sage:#0F9B8E;
+    --line:#BEDCF5;
+    --white:#FBFEFF;
+    --danger:#D6455A;
+    --radius:14px;
+    --font-display:'Noto Serif TC','Noto Sans TC',serif;
+    --font-body:'Noto Sans TC',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  #travel-log-root{
+    font-family:var(--font-body);
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100%;
+    padding:0 0 60px;
+  }
+  #travel-log-root .container{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+  #travel-log-root .app-header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:28px 0 22px;
+    margin-bottom:22px;
+    position:relative;
+    overflow:hidden;
+  }
+  #travel-log-root .app-header::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;bottom:0;
+    height:6px;
+    background:repeating-linear-gradient(90deg,var(--gold) 0 10px, transparent 10px 20px);
+    opacity:.55;
+  }
+  #travel-log-root .app-header .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 6px;
+  }
+  #travel-log-root .app-header h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:30px;
+    margin:0;
+    letter-spacing:.01em;
+  }
+  #travel-log-root .app-header p{
+    margin:6px 0 0;
+    font-size:13.5px;
+    color:#C9E3F7;
+  }
+  #travel-log-root .header-actions{
+    display:flex;gap:10px;justify-content:flex-end;margin-bottom:16px;flex-wrap:wrap;
+  }
+
+  /* ---------- top level nav ---------- */
+  #travel-log-root .toplevel-nav{
+    display:flex;gap:4px;border-bottom:1.5px solid var(--line);margin-bottom:20px;overflow-x:auto;
+  }
+  #travel-log-root .toplevel-nav button{
+    background:none;padding:10px 14px;font-size:13.5px;font-weight:700;color:var(--ink-70);
+    border-bottom:2.5px solid transparent;white-space:nowrap;
+  }
+  #travel-log-root .toplevel-nav button.active{color:var(--ink);border-color:var(--stamp);}
+
+  /* ---------- buttons ---------- */
+  #travel-log-root button{font-family:var(--font-body);cursor:pointer;border:none;}
+  #travel-log-root .btn{
+    display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:999px;
+    font-size:14px;font-weight:700;background:var(--ink);color:var(--paper);
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  #travel-log-root .btn:hover{opacity:.88;}
+  #travel-log-root .btn:active{transform:scale(.97);}
+  #travel-log-root .btn.gold{background:var(--gold);color:var(--ink);}
+  #travel-log-root .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink);}
+  #travel-log-root .btn.sm{padding:6px 12px;font-size:12.5px;}
+  #travel-log-root .btn.block{width:100%;justify-content:center;}
+  #travel-log-root .icon-btn{background:transparent;color:var(--ink-70);font-size:16px;padding:4px 8px;border-radius:8px;}
+  #travel-log-root .icon-btn:hover{background:var(--paper-2);}
+  #travel-log-root .icon-btn.danger:hover{background:#FBE1E6;color:var(--danger);}
+
+  /* ---------- photo trip cards ---------- */
+  #travel-log-root .trip-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  @media (max-width:600px){
+    #travel-log-root .trip-grid{grid-template-columns:1fr;}
+  }
+  #travel-log-root .photo-card{
+    position:relative;
+    border-radius:18px;
+    overflow:hidden;
+    cursor:pointer;
+    border:1px solid var(--line);
+    box-shadow:0 1px 2px rgba(20,51,91,.06);
+    transition:box-shadow .15s ease, transform .15s ease;
+    background:var(--white);
+  }
+  #travel-log-root .photo-card:hover{box-shadow:0 10px 24px rgba(20,51,91,.18);transform:translateY(-1px);}
+  #travel-log-root .photo-card-img{
+    width:100%;aspect-ratio:16/9;background-size:cover;background-position:center;position:relative;
+  }
+  #travel-log-root .photo-card-img.placeholder.domestic{
+    background:linear-gradient(135deg,#0F9B8E,#5FCBC5);
+  }
+  #travel-log-root .photo-card-img.placeholder.intl{
+    background:linear-gradient(135deg,#14335B,#3D6EA8);
+  }
+  #travel-log-root .photo-card-img.placeholder::before{
+    content:attr(data-icon);
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:52px;opacity:.5;
+  }
+  #travel-log-root .photo-card-hole{
+    position:absolute;left:14px;top:14px;width:16px;height:16px;border-radius:50%;
+    background:rgba(255,255,255,.85);border:2px solid var(--ink);z-index:3;
+  }
+  #travel-log-root .photo-card-badges{
+    position:absolute;right:12px;top:12px;display:flex;gap:6px;flex-direction:column;align-items:flex-end;z-index:3;
+  }
+  #travel-log-root .pc-chip{
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
+    padding:4px 9px;border-radius:999px;backdrop-filter:blur(2px);
+    background:rgba(255,255,255,.9);color:var(--ink);border:1px solid rgba(20,51,91,.18);
+  }
+  #travel-log-root .pc-chip.domestic{color:var(--sage);}
+  #travel-log-root .pc-chip.intl{color:var(--ink);}
+  #travel-log-root .pc-chip.status-upcoming{color:var(--gold);}
+  #travel-log-root .pc-chip.status-ongoing{color:var(--sage);}
+  #travel-log-root .pc-chip.status-past{color:var(--ink-70);}
+  #travel-log-root .photo-card-edit{
+    position:absolute;right:12px;bottom:12px;z-index:4;background:rgba(255,255,255,.92);
+    border:1px solid rgba(20,51,91,.18);border-radius:999px;width:28px;height:28px;
+    display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--ink);
+    box-shadow:0 1px 4px rgba(20,51,91,.25);
+  }
+  #travel-log-root .photo-card-edit:hover{background:var(--white);}
+  #travel-log-root .photo-card-overlay{
+    position:absolute;left:0;right:0;bottom:0;padding:34px 16px 14px;
+    background:linear-gradient(to top, rgba(20,51,91,.92), rgba(20,51,91,.55) 60%, transparent);
+    color:var(--paper);z-index:2;
+  }
+  #travel-log-root .photo-card-overlay .dest{
+    font-family:var(--font-display);font-weight:700;font-size:20px;margin:0 0 2px;
+  }
+  #travel-log-root .photo-card-overlay .sub{font-size:12.5px;color:#CFE6F8;margin:0;}
+  #travel-log-root .photo-card-overlay .meta{
+    font-family:var(--font-mono);font-size:11.5px;color:var(--gold);margin-top:8px;display:flex;gap:12px;flex-wrap:wrap;
+  }
+
+  /* ---------- empty state ---------- */
+  #travel-log-root .empty{
+    text-align:center;padding:60px 20px;border:1.5px dashed var(--line);border-radius:var(--radius);color:var(--ink-70);
+  }
+  #travel-log-root .empty .stamp{font-family:var(--font-display);font-size:44px;margin-bottom:6px;}
+  #travel-log-root .empty h3{font-family:var(--font-display);margin:6px 0 4px;color:var(--ink);}
+  #travel-log-root .empty p{font-size:13.5px;margin:0 0 18px;}
+
+  /* ---------- trip detail ---------- */
+  #travel-log-root .back-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  #travel-log-root .back-row .back{
+    font-family:var(--font-mono);font-size:12.5px;color:var(--ink-70);background:none;display:flex;align-items:center;gap:4px;
+  }
+  #travel-log-root .back-row .back:hover{color:var(--ink);}
+  #travel-log-root .trip-banner{
+    background:var(--ink);color:var(--paper);border-radius:var(--radius);padding:20px 22px;margin-bottom:18px;position:relative;
+    overflow:hidden;
+  }
+  #travel-log-root .trip-banner.has-photo{padding:0;}
+  #travel-log-root .trip-banner .banner-photo{width:100%;height:150px;background-size:cover;background-position:center;}
+  #travel-log-root .trip-banner .banner-body{padding:18px 22px;position:relative;}
+  #travel-log-root .trip-banner .dest{font-family:var(--font-display);font-size:26px;font-weight:700;margin:0 0 2px;}
+  #travel-log-root .trip-banner .name{margin:0;font-size:13px;color:#B9D6EF;}
+  #travel-log-root .trip-banner .dates{font-family:var(--font-mono);font-size:12.5px;margin-top:10px;color:var(--gold);}
+  #travel-log-root .trip-banner .stampcircle{
+    position:absolute;right:18px;top:18px;width:56px;height:56px;border:2px solid var(--gold);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:var(--font-mono);color:var(--gold);transform:rotate(-8deg);
+  }
+  #travel-log-root .trip-banner .stampcircle b{font-size:16px;line-height:1;}
+  #travel-log-root .trip-banner .stampcircle span{font-size:8px;letter-spacing:.05em;}
+  #travel-log-root .trip-banner .type-chip{
+    font-family:var(--font-mono);font-size:10.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);
+    display:inline-block;margin-top:8px;
+  }
+
+  /* ---------- tabs (trip detail) ---------- */
+  #travel-log-root .tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--line);margin-bottom:20px;overflow-x:auto;}
+  #travel-log-root .tab{
+    background:none;padding:10px 14px;font-size:13.5px;font-weight:700;color:var(--ink-70);border-bottom:2.5px solid transparent;white-space:nowrap;
+  }
+  #travel-log-root .tab.active{color:var(--ink);border-color:var(--stamp);}
+
+  /* ---------- cards / lists ---------- */
+  #travel-log-root .panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;}
+  #travel-log-root .panel h3{font-family:var(--font-display);margin:0 0 14px;font-size:16px;}
+  #travel-log-root .panel h3 small{font-family:var(--font-mono);font-size:11px;color:var(--ink-70);font-weight:400;margin-left:8px;}
+  #travel-log-root .item-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;border-top:1px solid var(--paper-2);}
+  #travel-log-root .item-row.clickable{cursor:pointer;border-radius:10px;transition:background .12s ease;}
+  #travel-log-root .item-row.clickable:hover{background:var(--paper-2);}
+  #travel-log-root .item-row:first-of-type{border-top:none;}
+  #travel-log-root .item-main{flex:1;min-width:0;}
+  #travel-log-root .item-thumb{width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex-shrink:0;}
+  #travel-log-root .item-title{font-weight:700;font-size:14px;margin:0 0 2px;}
+  #travel-log-root .item-sub{font-size:12.5px;color:var(--ink-70);margin:0;}
+  #travel-log-root .tagchip{
+    display:inline-block;font-family:var(--font-mono);font-size:10.5px;padding:2px 8px;border-radius:999px;color:var(--white);margin-right:6px;
+  }
+  #travel-log-root .amount{font-family:var(--font-mono);font-weight:700;font-size:14.5px;white-space:nowrap;}
+  #travel-log-root .amount small{display:block;font-weight:400;font-size:11px;color:var(--ink-70);}
+
+  /* forms */
+  #travel-log-root .field{margin-bottom:14px;}
+  #travel-log-root label{display:block;font-size:12px;font-weight:700;color:var(--ink-70);margin-bottom:5px;letter-spacing:.02em;}
+  #travel-log-root input, #travel-log-root select, #travel-log-root textarea{
+    width:100%;font-family:var(--font-body);font-size:14px;padding:10px 12px;border:1.5px solid var(--line);border-radius:9px;background:var(--paper);color:var(--ink);
+  }
+  #travel-log-root input:focus, #travel-log-root select:focus, #travel-log-root textarea:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold);}
+  #travel-log-root input[type=file]{padding:8px;font-size:12.5px;}
+  #travel-log-root .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  #travel-log-root .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  @media(max-width:520px){#travel-log-root .row3{grid-template-columns:1fr 1fr;}}
+
+  /* modal */
+  #travel-log-root .modal-overlay{position:fixed;inset:0;background:rgba(20,51,91,.45);display:flex;align-items:flex-end;justify-content:center;z-index:50;}
+  @media(min-width:640px){#travel-log-root .modal-overlay{align-items:center;}}
+  #travel-log-root .modal{background:var(--paper);width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:22px 22px 26px;max-height:88vh;overflow-y:auto;}
+  @media(min-width:640px){#travel-log-root .modal{border-radius:18px;}}
+  #travel-log-root .modal h3{font-family:var(--font-display);margin:0 0 16px;font-size:19px;}
+  #travel-log-root .modal-actions{display:flex;gap:10px;margin-top:6px;}
+  #travel-log-root .modal-note{font-size:12px;color:var(--ink-70);margin:-6px 0 14px;}
+  #travel-log-root .scan-status{
+    display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:12.5px;color:var(--gold);
+    padding:10px 12px;background:var(--paper-2);border-radius:9px;margin-bottom:14px;
+  }
+  #travel-log-root .spin{width:13px;height:13px;border-radius:50%;border:2px solid var(--gold);border-top-color:transparent;animation:tl-spin .7s linear infinite;}
+  @keyframes tl-spin{to{transform:rotate(360deg);}}
+
+  /* converter */
+  #travel-log-root .converter-box{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  #travel-log-root .converter-input{flex:1;min-width:140px;}
+  #travel-log-root .swap{background:var(--paper-2);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink);flex-shrink:0;}
+  #travel-log-root .rate-line{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-70);margin-top:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  #travel-log-root .rate-line input{width:90px;padding:5px 8px;font-size:12.5px;}
+
+  /* budget bar */
+  #travel-log-root .budget-bar-track{height:8px;border-radius:999px;background:var(--paper-2);overflow:hidden;margin-top:8px;}
+  #travel-log-root .budget-bar-fill{height:100%;border-radius:999px;background:var(--sage);}
+  #travel-log-root .budget-bar-fill.over{background:var(--danger);}
+
+  /* checklist */
+  #travel-log-root .check-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--paper-2);}
+  #travel-log-root .check-row:first-of-type{border-top:none;}
+  #travel-log-root .checkbox{
+    width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    background:var(--paper);color:var(--white);font-size:12px;font-weight:900;
+  }
+  #travel-log-root .checkbox.checked{background:var(--sage);border-color:var(--sage);}
+  #travel-log-root .check-row .txt{flex:1;font-size:14px;}
+  #travel-log-root .check-row.checked .txt{text-decoration:line-through;color:var(--ink-70);}
+  #travel-log-root .progress-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-family:var(--font-mono);font-size:12.5px;color:var(--ink-70);}
+
+  /* notes */
+  #travel-log-root .note-row{padding:12px 14px;border-radius:10px;background:var(--paper-2);margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
+  #travel-log-root .note-row.important{background:#FBE1E6;}
+  #travel-log-root .note-row .mark{font-size:14px;flex-shrink:0;}
+  #travel-log-root .note-row p{margin:0;font-size:13.5px;flex:1;}
+
+  #travel-log-root .quick-add{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  #travel-log-root .quick-add input{flex:1;min-width:140px;}
+  #travel-log-root .pack-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:24px;}
+  #travel-log-root .pack-group{min-width:0;}
+  @media (max-width:520px){
+    #travel-log-root .pack-grid{grid-template-columns:1fr;}
+  }
+
+  #travel-log-root .day-badge{
+    font-family:var(--font-mono);font-size:11px;font-weight:700;background:var(--ink);color:var(--paper);padding:3px 9px;border-radius:6px;display:inline-block;margin-bottom:4px;
+  }
+  #travel-log-root .day-panel{margin-bottom:14px;}
+  #travel-log-root .day-panel-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
+  #travel-log-root .day-panel-head .day-num{font-family:var(--font-display);font-weight:700;font-size:17px;}
+  #travel-log-root .day-panel-head .day-date{font-family:var(--font-mono);font-size:12px;color:var(--ink-70);}
+
+  /* stats view */
+  #travel-log-root .stat-hero{background:var(--ink);color:var(--paper);border-radius:var(--radius);padding:26px 24px;margin-bottom:18px;text-align:center;}
+  #travel-log-root .stat-hero .num{font-family:var(--font-display);font-size:44px;font-weight:700;color:var(--gold);}
+  #travel-log-root .stat-hero .lbl{font-size:13px;color:#C9E3F7;margin-top:2px;}
+  #travel-log-root .stat-hero .top-country{margin-top:16px;padding-top:16px;border-top:1px dashed rgba(255,255,255,.25);font-family:var(--font-mono);font-size:12.5px;color:var(--gold);}
+  #travel-log-root .stat-hero .top-country b{font-family:var(--font-display);font-size:20px;color:var(--paper);display:block;margin-top:2px;}
+  #travel-log-root .stat-hero .split{display:flex;justify-content:center;gap:28px;margin-top:14px;font-family:var(--font-mono);font-size:12px;color:#C9E3F7;}
+  #travel-log-root .stat-hero .split b{color:var(--paper);font-size:16px;display:block;}
+  #travel-log-root .country-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--paper-2);}
+  #travel-log-root .country-row:first-of-type{border-top:none;}
+  #travel-log-root .country-row .rank{font-family:var(--font-mono);font-size:12px;color:var(--ink-70);width:20px;flex-shrink:0;}
+  #travel-log-root .country-row .cname{flex:1;font-weight:700;font-size:14.5px;}
+  #travel-log-root .country-row .cbar-track{flex:2;height:8px;border-radius:999px;background:var(--paper-2);overflow:hidden;}
+  #travel-log-root .country-row .cbar-fill{height:100%;background:var(--gold);border-radius:999px;}
+  #travel-log-root .country-row .ccount{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-70);width:56px;text-align:right;flex-shrink:0;}
+
+  /* flights & hotel & documents */
+  #travel-log-root .flight-card, #travel-log-root .hotel-card, #travel-log-root .doc-card{
+    border:1px solid var(--line);border-radius:11px;padding:14px 16px;margin-bottom:10px;position:relative;
+  }
+  #travel-log-root .flight-route{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:15px;font-weight:700;}
+  #travel-log-root .flight-route .arrow{color:var(--gold);}
+  #travel-log-root .flight-meta{font-size:12.5px;color:var(--ink-70);margin-top:6px;}
+  #travel-log-root .hotel-name{font-family:var(--font-display);font-weight:700;font-size:15.5px;margin:0 0 4px;}
+  #travel-log-root .hotel-meta{font-size:12.5px;color:var(--ink-70);line-height:1.6;}
+  #travel-log-root .del-corner{position:absolute;right:8px;top:8px;}
+  #travel-log-root .edit-corner{position:absolute;right:38px;top:8px;}
+
+  #travel-log-root .doc-card .doc-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;padding-right:26px;}
+  #travel-log-root .doc-title{font-family:var(--font-display);font-weight:700;font-size:15.5px;margin:0;}
+  #travel-log-root .doc-meta{font-size:12.5px;color:var(--ink-70);line-height:1.6;}
+  #travel-log-root .doc-expiry-warn{
+    font-family:var(--font-mono);font-size:10.5px;color:var(--danger);border:1px solid var(--danger);border-radius:999px;padding:2px 8px;
+  }
+  #travel-log-root .doc-cat-head{
+    font-family:var(--font-mono);font-size:11px;color:var(--ink-70);letter-spacing:.06em;margin:16px 0 8px;text-transform:uppercase;
+  }
+  #travel-log-root .doc-cat-head:first-child{margin-top:0;}
+</style>
+
+<div id="travel-log-root">
+  <div id="tl-app"></div>
+</div>
+
+<script>
+(function(){
+  const EXPENSE_CATS = [
+    {key:'餐飲',color:'#2563EB'},
+    {key:'交通',color:'#0F9B8E'},
+    {key:'住宿',color:'#14335B'},
+    {key:'購物',color:'#38BDF8'},
+    {key:'門票',color:'#5B6EE1'},
+    {key:'其他',color:'#7A93AC'}
+  ];
+  const PACK_CATS = ['證件','衣物','3C 電子','盥洗用品','化妝品','隨身','其他'];
+  const BOOKING_SITES = ['Booking.com','Agoda','Trip.com','Expedia','Hotels.com','飯店官網','其他'];
+  const TERMINALS = ['不指定','第 1 航廈','第 2 航廈','第 3 航廈'];
+  const BAGGAGE_TYPES = [
+    {key:'personal', label:'隨身行李'},
+    {key:'carryon', label:'手提行李'},
+    {key:'checked', label:'托運行李'}
+  ];
+  const PAYMENT_METHODS = [
+    {key:'credit', label:'信用卡'},
+    {key:'foreign_cash', label:'外幣現金'},
+    {key:'home_cash', label:'台幣現金'}
+  ];
+  const BANKS = ['國泰','玉山','中信','其他'];
+  const TAX_REFUND_STATUSES = [
+    {key:'pending', label:'尚未退稅'},
+    {key:'cash', label:'已退稅（退外幣現金）'},
+    {key:'credit', label:'已退稅（退信用卡）'}
+  ];
+  const DOC_CATS = ['護照','台胞證','簽證','航空會員'];
+  const ITIN_TAGS = [
+    {key:'交通',color:'#2563EB'},
+    {key:'景點',color:'#0F9B8E'},
+    {key:'美食',color:'#38BDF8'},
+    {key:'住宿',color:'#8B5CF6'}
+  ];
+  const TOP_NAV = [
+    {key:'home', label:'旅程列表'},
+    {key:'stats', label:'統計總覽'},
+    {key:'frequentFlights', label:'常搭乘航空'},
+    {key:'documents', label:'證件與會員'}
+  ];
+
+  let state = {
+    view: 'home', // home | trip | stats | frequentFlights | documents
+    tripId: null,
+    tab: 'itinerary',
+    trips: [],
+    tripData: null,
+    airlineStats: null,
+    airlineStatsLoading: false,
+    documents: [],
+    loading: true,
+    modal: null,
+    scanning: false,
+    scanError: null
+  };
+
+  const root = document.getElementById('tl-app');
+  const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+  async function safeGet(key){
+    try{ const r = await window.storage.get(key, false); return r ? JSON.parse(r.value) : null; }
+    catch(e){ return null; }
+  }
+  async function safeSet(key, value){
+    try{ await window.storage.set(key, JSON.stringify(value), false); }
+    catch(e){ console.error('storage set failed', e); }
+  }
+
+  async function loadTrips(){ state.trips = (await safeGet('trips')) || []; }
+  async function saveTrips(){ await safeSet('trips', state.trips); }
+  async function loadTripData(id){
+    const d = await safeGet('trip-data:'+id);
+    state.tripData = Object.assign({itinerary:[], expenses:[], notes:[], packing:[], flights:[], hotels:[]}, d || {});
+  }
+  async function saveTripData(){ await safeSet('trip-data:'+state.tripId, state.tripData); }
+  async function computeAirlineStats(){
+    const counts = {};
+    for(const trip of state.trips){
+      const d = await safeGet('trip-data:'+trip.id);
+      if(d && Array.isArray(d.flights)){
+        d.flights.forEach(f=>{
+          const name = (f.airline||'').trim();
+          if(!name) return;
+          counts[name] = (counts[name]||0) + 1;
+        });
+      }
+    }
+    return Object.entries(counts).map(([airline,count])=>({airline,count})).sort((a,b)=> b.count - a.count);
+  }
+  async function loadDocuments(){ state.documents = (await safeGet('travel-documents')) || []; }
+  async function saveDocuments(){ await safeSet('travel-documents', state.documents); }
+
+  function fmtMoney(n){ n = Number(n)||0; return n.toLocaleString('zh-TW',{maximumFractionDigits:2}); }
+  function tripStatus(trip){
+    const today = new Date().toISOString().slice(0,10);
+    if(trip.endDate < today) return {key:'past', label:'已結束'};
+    if(trip.startDate > today) return {key:'upcoming', label:'即將出發'};
+    return {key:'ongoing', label:'進行中'};
+  }
+  function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+  function catColor(list, key){ const f = list.find(c=>(c.key||c)===key); return f ? (f.color||'#7A93AC') : '#7A93AC'; }
+  function formatBaggage(baggage){
+    if(!baggage) return '';
+    const parts = BAGGAGE_TYPES.map(t=>{
+      const b = baggage[t.key];
+      if(!b || (!b.count && !b.kg)) return '';
+      const bits = [];
+      if(b.count) bits.push(`${b.count} 件`);
+      if(b.kg) bits.push(`${b.kg} kg`);
+      return `${t.label} ${bits.join(' ')}`;
+    }).filter(Boolean);
+    return parts.join('　');
+  }
+  function readBaggageFields(){
+    const baggage = {};
+    BAGGAGE_TYPES.forEach(t=>{
+      const countEl = document.getElementById(`m-bag-${t.key}-count`);
+      const kgEl = document.getElementById(`m-bag-${t.key}-kg`);
+      const count = countEl && countEl.value ? parseInt(countEl.value) : null;
+      const kg = kgEl && kgEl.value ? parseFloat(kgEl.value) : null;
+      if(count || kg) baggage[t.key] = {count, kg};
+    });
+    return baggage;
+  }
+  function formatPayment(e){
+    const pm = PAYMENT_METHODS.find(p=>p.key===e.payMethod);
+    if(!pm) return '';
+    let s = pm.label;
+    if(e.payMethod === 'credit' && e.bank){
+      const bits = [e.bank];
+      if(e.rewards) bits.push('有回饋');
+      if(e.feePct) bits.push(`手續費 ${e.feePct}%`);
+      s += `（${bits.join('・')}）`;
+    }
+    return s;
+  }
+  function formatTaxRefund(e){
+    if(!e.taxRefundEligible) return '';
+    const st = TAX_REFUND_STATUSES.find(s=>s.key===e.taxRefundStatus);
+    return `可退稅${st ? '・'+st.label : ''}`;
+  }
+  function currentTrip(){ return state.trips.find(t => t.id === state.tripId); }
+  function toHomeCurrency(amount, currency, trip){ return currency === trip.homeCurrency ? amount : amount * trip.exchangeRate; }
+  function esc(s){
+    if(s===undefined||s===null) return '';
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function daysUntil(dateStr){
+    if(!dateStr) return null;
+    return Math.round((new Date(dateStr) - new Date(new Date().toISOString().slice(0,10)))/86400000);
+  }
+  function compressImage(file, maxWidth, quality){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = (e)=>{
+        const img = new Image();
+        img.onload = ()=>{
+          let w = img.width, h = img.height;
+          if(w > maxWidth){ h = Math.round(h * (maxWidth / w)); w = maxWidth; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ---------------- RENDER ----------------
+  function render(){
+    if(state.loading){
+      root.innerHTML = `<div class="container" style="padding-top:60px;text-align:center;color:var(--ink-70);font-family:var(--font-mono);font-size:13px;">載入中…</div>`;
+      return;
+    }
+    if(state.view === 'home') renderHome();
+    else if(state.view === 'stats') renderStats();
+    else if(state.view === 'frequentFlights') renderFreqFlights();
+    else if(state.view === 'documents') renderDocuments();
+    else renderTrip();
+
+    if(state.modal) renderModal();
+  }
+
+  function shellHeader(){
+    return `
+      <div class="app-header">
+        <div class="container">
+          <p class="eyebrow">Travel Log · 旅程手札</p>
+          <h1>我的旅遊紀錄</h1>
+          <p>行程明細、花費、匯率換算、注意事項與行李清單，通通記在這裡。</p>
+        </div>
+      </div>`;
+  }
+  function topNav(active){
+    return `<div class="toplevel-nav">${TOP_NAV.map(i=>`<button class="${active===i.key?'active':''}" onclick="TL.setView('${i.key}')">${i.label}</button>`).join('')}</div>`;
+  }
+
+  function renderHome(){
+    let cards = '';
+    if(state.trips.length === 0){
+      cards = `
+        <div class="empty">
+          <div class="stamp">✈️</div>
+          <h3>還沒有旅程紀錄</h3>
+          <p>建立第一趟旅程，開始記錄行程、花費與行李清單。</p>
+          <button class="btn gold" onclick="TL.openModal('newTrip')">+ 新增旅程</button>
+        </div>`;
+    }else{
+      const today = new Date().toISOString().slice(0,10);
+      const sorted = [...state.trips].sort((a,b)=> Math.abs(daysBetween(today,a.startDate)) - Math.abs(daysBetween(today,b.startDate)));
+      cards = `<div class="trip-grid">` + sorted.map(trip=>{
+        const st = tripStatus(trip);
+        const nights = daysBetween(trip.startDate, trip.endDate);
+        const isDomestic = trip.tripType === 'domestic';
+        const imgHtml = trip.coverImage
+          ? `<div class="photo-card-img" style="background-image:url('${trip.coverImage}');"></div>`
+          : `<div class="photo-card-img placeholder ${isDomestic?'domestic':'intl'}" data-icon="${isDomestic?'🏞️':'🌍'}"></div>`;
+        return `
+        <div class="photo-card" onclick="TL.openTrip('${trip.id}')">
+          <div class="photo-card-hole"></div>
+          ${imgHtml}
+          <div class="photo-card-badges">
+            <span class="pc-chip ${isDomestic?'domestic':'intl'}">${isDomestic?'國內旅遊':'國外旅遊'}</span>
+            <span class="pc-chip status-${st.key}">${st.label}</span>
+          </div>
+          <button class="icon-btn photo-card-edit" title="編輯旅程" onclick="event.stopPropagation();TL.openEditTrip('${trip.id}')">✎</button>
+          <div class="photo-card-overlay">
+            <p class="dest">${esc(trip.country)} · ${esc(trip.destination)}</p>
+            <p class="sub">${esc(trip.name)}</p>
+            <div class="meta">
+              <span>${trip.startDate} → ${trip.endDate}</span>
+              <span>${nights} 天</span>
+              <span>${esc(trip.localCurrency)} → ${esc(trip.homeCurrency)}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('') + `</div>`;
+    }
+
+    root.innerHTML = `
+      ${shellHeader()}
+      <div class="container">
+        ${topNav('home')}
+        <div class="header-actions">
+          <button class="btn gold" onclick="TL.openModal('newTrip')">+ 新增旅程</button>
+        </div>
+        ${cards}
+      </div>`;
+  }
+
+  function renderStats(){
+    const counts = {};
+    let domesticCount = 0, intlCount = 0;
+    state.trips.forEach(t=>{
+      const key = t.country || '未分類';
+      counts[key] = (counts[key]||0)+1;
+      if(t.tripType === 'domestic') domesticCount++; else intlCount++;
+    });
+    const ranked = Object.entries(counts).sort((a,b)=> b[1]-a[1]);
+    const top = ranked[0];
+    const maxCount = ranked.length ? ranked[0][1] : 0;
+
+    root.innerHTML = `
+      ${shellHeader()}
+      <div class="container">
+        ${topNav('stats')}
+        <div class="stat-hero">
+          <div class="num">${state.trips.length}</div>
+          <div class="lbl">趟旅程紀錄</div>
+          <div class="split">
+            <div>國內旅遊<b>${domesticCount}</b></div>
+            <div>國外旅遊<b>${intlCount}</b></div>
+          </div>
+          ${top ? `<div class="top-country">最常造訪<b>${esc(top[0])} · ${top[1]} 次</b></div>` : ''}
+        </div>
+        <div class="panel">
+          <h3>各國家造訪次數</h3>
+          ${ranked.length===0 ? `<p style="color:var(--ink-70);font-size:13.5px;">還沒有旅程資料。</p>` : ranked.map(([country,count],idx)=>`
+            <div class="country-row">
+              <span class="rank">#${idx+1}</span>
+              <span class="cname">${esc(country)}</span>
+              <div class="cbar-track"><div class="cbar-fill" style="width:${(count/maxCount)*100}%;"></div></div>
+              <span class="ccount">${count} 次</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  function renderFreqFlights(){
+    const stats = state.airlineStats || [];
+    const maxCount = stats.length ? stats[0].count : 0;
+    root.innerHTML = `
+      ${shellHeader()}
+      <div class="container">
+        ${topNav('frequentFlights')}
+        <div class="panel">
+          <h3>常搭乘航空 <small>依各旅程「航班」分頁新增的紀錄自動統計搭乘次數</small></h3>
+          ${state.airlineStatsLoading ? `<p style="color:var(--ink-70);font-size:13.5px;">統計中…</p>` : (
+            stats.length===0
+              ? `<p style="color:var(--ink-70);font-size:13.5px;">還沒有任何航班紀錄。到旅程明細的「航班」分頁新增搭乘紀錄後，會自動統計在這裡。</p>`
+              : stats.map((s,i)=>`
+                <div class="country-row">
+                  <span class="rank">${i+1}</span>
+                  <span class="cname">${esc(s.airline)}</span>
+                  <div class="cbar-track"><div class="cbar-fill" style="width:${maxCount ? (s.count/maxCount*100) : 0}%;"></div></div>
+                  <span class="ccount">${s.count} 次</span>
+                </div>
+              `).join('')
+          )}
+        </div>
+      </div>`;
+  }
+
+  function renderDocuments(){
+    const groups = {};
+    DOC_CATS.forEach(c=>groups[c]=[]);
+    groups['自訂'] = [];
+    state.documents.forEach(d=>{
+      const cat = DOC_CATS.includes(d.category) ? d.category : '自訂';
+      groups[cat].push(d);
+    });
+    const order = [...DOC_CATS, '自訂'];
+
+    root.innerHTML = `
+      ${shellHeader()}
+      <div class="container">
+        ${topNav('documents')}
+        <div class="panel">
+          <h3>證件與航空會員 <small>護照、台胞證、簽證、各航空公司會員資料，皆可自行新增</small></h3>
+          ${state.documents.length===0 ? `<p style="color:var(--ink-70);font-size:13.5px;">還沒有任何證件或會員資料。</p>` : ''}
+          ${order.filter(cat=>groups[cat].length>0).map(cat=>`
+            <p class="doc-cat-head">${cat}</p>
+            ${groups[cat].map(d=>{
+              const left = daysUntil(d.expiry);
+              const showWarn = left !== null && left <= 90;
+              return `
+              <div class="doc-card">
+                <button class="icon-btn danger del-corner" onclick="TL.deleteDocument('${d.id}')">✕</button>
+                <div class="doc-top">
+                  <p class="doc-title">${esc(d.title)}</p>
+                  ${showWarn ? `<span class="doc-expiry-warn">${left<0?'已過期':'即將到期 '+left+' 天'}</span>` : ''}
+                </div>
+                <div class="doc-meta">
+                  ${d.number ? `編號：${esc(d.number)}<br>` : ''}
+                  ${d.expiry ? `效期至：${d.expiry}<br>` : ''}
+                  ${d.note ? `${esc(d.note)}` : ''}
+                </div>
+              </div>`;
+            }).join('')}
+          `).join('')}
+          <button class="btn gold sm" style="margin-top:4px;" onclick="TL.openModal('newDocument')">+ 新增證件 / 會員資料</button>
+        </div>
+      </div>`;
+  }
+
+  function renderTrip(){
+    const trip = currentTrip();
+    if(!trip){ state.view='home'; render(); return; }
+    const st = tripStatus(trip);
+    const nights = daysBetween(trip.startDate, trip.endDate);
+    const isDomestic = trip.tripType === 'domestic';
+
+    const tabs = [
+      {key:'itinerary', label:'行程明細'},
+      {key:'expenses', label:'花費與匯率'},
+      {key:'travel', label:'航班住宿'},
+      {key:'notes', label:'注意事項'},
+      {key:'packing', label:'行李清單'}
+    ];
+
+    root.innerHTML = `
+      <div class="container" style="padding-top:24px;">
+        <div class="back-row" style="justify-content:space-between;">
+          <button class="back" onclick="TL.goHome()">← 回旅程列表</button>
+          <button class="btn ghost sm" onclick="TL.openEditTrip('${trip.id}')">✎ 編輯旅程</button>
+        </div>
+        <div class="trip-banner ${trip.coverImage?'has-photo':''}">
+          ${trip.coverImage ? `<div class="banner-photo" style="background-image:url('${trip.coverImage}');"></div>` : ''}
+          <div class="banner-body">
+            <div class="stampcircle"><b>${nights}</b><span>天</span></div>
+            <p class="dest">${esc(trip.country)} · ${esc(trip.destination)}</p>
+            <p class="name">${esc(trip.name)}</p>
+            <p class="dates">${trip.startDate} → ${trip.endDate} · ${st.label} · ${esc(trip.localCurrency)}/${esc(trip.homeCurrency)}</p>
+            <span class="type-chip">${isDomestic?'國內旅遊':'國外旅遊'}</span>
+          </div>
+        </div>
+        <div class="tabs">
+          ${tabs.map(t=>`<button class="tab ${state.tab===t.key?'active':''}" onclick="TL.setTab('${t.key}')">${t.label}</button>`).join('')}
+        </div>
+        <div id="tl-tab-content"></div>
+      </div>`;
+
+    const c = document.getElementById('tl-tab-content');
+    if(state.tab==='itinerary') c.innerHTML = renderItinerary(trip);
+    else if(state.tab==='expenses') c.innerHTML = renderExpenses(trip);
+    else if(state.tab==='travel') c.innerHTML = renderTravelInfo(trip);
+    else if(state.tab==='notes') c.innerHTML = renderNotes(trip);
+    else if(state.tab==='packing') c.innerHTML = renderPacking(trip);
+  }
+
+  function renderItinerary(trip){
+    const totalDays = daysBetween(trip.startDate, trip.endDate) + 1;
+    const byDate = {};
+    state.tripData.itinerary.forEach(it=>{ (byDate[it.date] = byDate[it.date]||[]).push(it); });
+    let panels = '';
+    for(let i=0;i<totalDays;i++){
+      const d = new Date(trip.startDate);
+      d.setDate(d.getDate()+i);
+      const dateStr = d.toISOString().slice(0,10);
+      const items = (byDate[dateStr]||[]).sort((a,b)=> (a.time||'').localeCompare(b.time||''));
+      delete byDate[dateStr];
+      panels += `
+        <div class="day-panel panel">
+          <div class="day-panel-head"><span class="day-num">Day ${i+1}</span><span class="day-date">${dateStr}</span></div>
+          ${items.length===0 ? `<p style="color:var(--ink-70);font-size:13px;margin:6px 0 10px;">這天還沒有安排行程。</p>` : items.map(it=>`
+            <div class="item-row clickable" onclick="TL.openEditItin('${it.id}')">
+              ${it.image ? `<img src="${it.image}" class="item-thumb" alt="">` : ''}
+              <div class="item-main">
+                ${it.time ? `<span class="day-badge">${it.time}</span>` : ''}
+                ${it.tag ? `<span class="tagchip" style="background:${catColor(ITIN_TAGS, it.tag)};">${esc(it.tag)}</span>` : ''}
+                <p class="item-title">${esc(it.title)}</p>
+                ${it.note? `<p class="item-sub">${esc(it.note)}</p>` : ''}
+              </div>
+              <button class="icon-btn danger" onclick="event.stopPropagation(); TL.deleteItin('${it.id}')">✕</button>
+            </div>
+          `).join('')}
+          <button class="btn gold sm" style="margin-top:8px;" onclick="TL.openModal('newItin','${dateStr}')">+ 新增這天的行程</button>
+        </div>`;
+    }
+    const leftoverDates = Object.keys(byDate).sort();
+    if(leftoverDates.length){
+      panels += `<div class="day-panel panel"><div class="day-panel-head"><span class="day-num">其他日期</span></div>`;
+      leftoverDates.forEach(dateStr=>{
+        byDate[dateStr].forEach(it=>{
+          panels += `
+            <div class="item-row clickable" onclick="TL.openEditItin('${it.id}')">
+              ${it.image ? `<img src="${it.image}" class="item-thumb" alt="">` : ''}
+              <div class="item-main">
+                <span class="day-badge">${dateStr}${it.time? ' · '+it.time:''}</span>
+                ${it.tag ? `<span class="tagchip" style="background:${catColor(ITIN_TAGS, it.tag)};">${esc(it.tag)}</span>` : ''}
+                <p class="item-title">${esc(it.title)}</p>
+                ${it.note? `<p class="item-sub">${esc(it.note)}</p>` : ''}
+              </div>
+              <button class="icon-btn danger" onclick="event.stopPropagation(); TL.deleteItin('${it.id}')">✕</button>
+            </div>`;
+        });
+      });
+      panels += `</div>`;
+    }
+    return panels;
+  }
+
+  function renderExpenses(trip){
+    const items = state.tripData.expenses;
+    let total = 0;
+    items.forEach(e => total += toHomeCurrency(Number(e.amount), e.currency, trip));
+    const hasBudget = trip.budget && Number(trip.budget) > 0;
+    const pct = hasBudget ? Math.min(100, (total/Number(trip.budget))*100) : 0;
+    const over = hasBudget && total > Number(trip.budget);
+
+    const grouped = {};
+    EXPENSE_CATS.forEach(c=> grouped[c.key] = []);
+    items.forEach(e=>{ (grouped[e.category] = grouped[e.category]||[]).push(e); });
+
+    return `
+      <div class="panel">
+        <h3>匯率換算</h3>
+        <div class="converter-box">
+          <div class="converter-input">
+            <label>${esc(trip.localCurrency)}（當地）</label>
+            <input type="number" id="tl-conv-local" placeholder="輸入金額" oninput="TL.convertFromLocal()">
+          </div>
+          <div class="swap">⇄</div>
+          <div class="converter-input">
+            <label>${esc(trip.homeCurrency)}（本國）</label>
+            <input type="number" id="tl-conv-home" placeholder="輸入金額" oninput="TL.convertFromHome()">
+          </div>
+        </div>
+        <div class="rate-line">
+          匯率：1 ${esc(trip.localCurrency)} =
+          <input type="number" step="0.0001" id="tl-rate-input" value="${trip.exchangeRate}" onchange="TL.updateRate(this.value)">
+          ${esc(trip.homeCurrency)}
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>花費總覽</h3>
+        <div class="item-row" style="border-top:none;">
+          <div class="item-main"><p class="item-sub">目前總花費（換算為 ${esc(trip.homeCurrency)}）</p></div>
+          <div class="amount">${trip.homeCurrency} ${fmtMoney(total)}</div>
+        </div>
+        ${hasBudget ? `
+          <div class="rate-line" style="margin-top:2px;">預算：${trip.homeCurrency} ${fmtMoney(trip.budget)}</div>
+          <div class="budget-bar-track"><div class="budget-bar-fill ${over?'over':''}" style="width:${pct}%;"></div></div>
+        ` : ''}
+      </div>
+
+      <div class="panel">
+        <h3>花費明細 <small>依類別分類</small></h3>
+        ${state.scanError ? `<div class="scan-status" style="color:var(--danger);">⚠️ ${esc(state.scanError)}</div>` : ''}
+        ${items.length===0 ? `<p style="color:var(--ink-70);font-size:13.5px;">還沒有花費紀錄，新增第一筆或掃描發票吧。</p>` : ''}
+        ${EXPENSE_CATS.map(cat=>{
+          const list = grouped[cat.key] || [];
+          if(list.length===0) return '';
+          const sorted = [...list].sort((a,b)=> b.date.localeCompare(a.date));
+          let subtotal = 0;
+          sorted.forEach(e => subtotal += toHomeCurrency(Number(e.amount), e.currency, trip));
+          return `
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:8px;margin:14px 0 2px;">
+                <span class="tagchip" style="background:${cat.color};">${cat.key}</span>
+                <span style="font-family:var(--font-mono);font-size:11.5px;color:var(--ink-70);">小計 ${trip.homeCurrency} ${fmtMoney(subtotal)}</span>
+              </div>
+              ${sorted.map(e=>{
+                const converted = toHomeCurrency(Number(e.amount), e.currency, trip);
+                const showConverted = e.currency !== trip.homeCurrency;
+                const payLine = formatPayment(e);
+                const refundLine = formatTaxRefund(e);
+                return `
+                <div class="item-row">
+                  <div class="item-main">
+                    <p class="item-title">${esc(e.desc)}${e.merchant ? ` · ${esc(e.merchant)}` : ''}</p>
+                    <p class="item-sub">${e.date}${payLine ? ' ・ '+payLine : ''}${refundLine ? ' ・ '+refundLine : ''}</p>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="amount">${e.currency} ${fmtMoney(e.amount)}
+                      ${showConverted ? `<small>≈ ${trip.homeCurrency} ${fmtMoney(converted)}</small>` : ''}
+                    </div>
+                    <button class="icon-btn danger" onclick="TL.deleteExpense('${e.id}')">✕</button>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div>`;
+        }).join('')}
+        <div class="quick-add">
+          <input type="file" id="tl-receipt-input" accept="image/*" capture="environment" style="display:none;" onchange="TL.scanReceipt(this)">
+          <button class="btn ghost sm" onclick="document.getElementById('tl-receipt-input').click()">📷 掃描發票</button>
+          <button class="btn gold sm" onclick="TL.openModal('newExpense')">+ 手動新增花費</button>
+        </div>
+      </div>`;
+  }
+
+  function renderTravelInfo(trip){
+    const flights = [...state.tripData.flights].sort((a,b)=> a.date.localeCompare(b.date));
+    const hotels = [...state.tripData.hotels].sort((a,b)=> a.checkinDate.localeCompare(b.checkinDate));
+    return `
+      <div class="panel">
+        <h3>航班</h3>
+        ${flights.length===0 ? `<p style="color:var(--ink-70);font-size:13.5px;">還沒有航班紀錄。</p>` : flights.map(f=>`
+          <div class="flight-card">
+            <button class="icon-btn edit-corner" onclick="TL.openEditFlight('${f.id}')">✎</button>
+            <button class="icon-btn danger del-corner" onclick="TL.deleteFlight('${f.id}')">✕</button>
+            <div class="flight-route">${esc(f.depAirport)} <span class="arrow">→</span> ${esc(f.arrAirport)}</div>
+            <div class="flight-meta">${esc(f.airline)} ${esc(f.flightNo)} · ${f.date}　起飛 ${f.depTime||'--:--'} / 抵達 ${f.arrTime||'--:--'}${f.terminal && f.terminal!=='不指定' ? `　${esc(f.terminal)}` : ''}</div>
+            ${formatBaggage(f.baggage) ? `<div class="flight-meta" style="margin-top:2px;">🧳 ${formatBaggage(f.baggage)}</div>` : ''}
+          </div>
+        `).join('')}
+        <button class="btn gold sm" style="margin-top:4px;" onclick="TL.openModal('newFlight')">+ 新增航班</button>
+      </div>
+      <div class="panel">
+        <h3>飯店</h3>
+        ${hotels.length===0 ? `<p style="color:var(--ink-70);font-size:13.5px;">還沒有飯店紀錄。</p>` : hotels.map(h=>`
+          <div class="hotel-card">
+            <button class="icon-btn edit-corner" onclick="TL.openEditHotel('${h.id}')">✎</button>
+            <button class="icon-btn danger del-corner" onclick="TL.deleteHotel('${h.id}')">✕</button>
+            <p class="hotel-name">${esc(h.name)}</p>
+            <p class="hotel-meta">
+              📍 ${esc(h.address)}<br>
+              入住 ${h.checkinDate} ${h.checkinTime||''} → 退房 ${h.checkoutDate} ${h.checkoutTime||''}
+              ${h.bookingSite ? `<br>訂房網站：${esc(h.bookingSite)}` : ''}
+              ${h.phone ? `<br>聯絡電話：${esc(h.phone)}` : ''}
+              ${h.confirmationNo ? `<br>訂房確認碼：${esc(h.confirmationNo)}` : ''}
+            </p>
+          </div>
+        `).join('')}
+        <button class="btn gold sm" style="margin-top:4px;" onclick="TL.openModal('newHotel')">+ 新增飯店</button>
+      </div>`;
+  }
+
+  function renderNotes(trip){
+    const items = state.tripData.notes;
+    return `
+      <div class="panel">
+        <h3>注意事項</h3>
+        ${items.length===0 ? `<p style="color:var(--ink-70);font-size:13.5px;">還沒有注意事項，例如簽證、插頭、天氣提醒等等。</p>` : items.map(n=>`
+          <div class="note-row ${n.important?'important':''}">
+            <span class="mark">${n.important?'★':'•'}</span>
+            <p>${esc(n.text)}</p>
+            <button class="icon-btn danger" onclick="TL.deleteNote('${n.id}')">✕</button>
+          </div>
+        `).join('')}
+        <div class="quick-add">
+          <input type="text" id="tl-note-input" placeholder="輸入注意事項，按 Enter 新增" onkeydown="if(event.key==='Enter')TL.addNote(false)">
+          <button class="btn sm ghost" onclick="TL.addNote(true)">加為重要</button>
+          <button class="btn sm gold" onclick="TL.addNote(false)">新增</button>
+        </div>
+      </div>`;
+  }
+
+  function renderPacking(trip){
+    const items = state.tripData.packing;
+    const checked = items.filter(i=>i.checked).length;
+    const groups = {};
+    PACK_CATS.forEach(c => groups[c] = []);
+    items.forEach(i => { (groups[i.category] = groups[i.category]||[]).push(i); });
+
+    return `
+      <div class="panel">
+        <div class="progress-line"><span>行李清單</span><span>${checked} / ${items.length} 已打包</span></div>
+        <div class="quick-add">
+          <input type="text" id="tl-pack-input" placeholder="輸入物品名稱，按 Enter 新增" onkeydown="if(event.key==='Enter')TL.addPack()">
+          <select id="tl-pack-cat" style="max-width:130px;">${PACK_CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+          <button class="btn sm gold" onclick="TL.addPack()">新增</button>
+        </div>
+        ${items.length===0 ? `<p style="color:var(--ink-70);font-size:13.5px;margin-top:16px;">還沒有清單項目，新增證件、衣物、電子產品等。</p>` : ''}
+        <div class="pack-grid">
+          ${Object.keys(groups).filter(g=>groups[g].length>0).map(g=>`
+            <div class="pack-group">
+              <p style="font-family:var(--font-mono);font-size:11px;color:var(--ink-70);letter-spacing:.06em;margin:14px 0 2px;text-transform:uppercase;">${g}</p>
+              ${groups[g].map(i=>`
+                <div class="check-row ${i.checked?'checked':''}">
+                  <button class="checkbox ${i.checked?'checked':''}" onclick="TL.togglePack('${i.id}')">${i.checked?'✓':''}</button>
+                  <span class="txt">${esc(i.text)}</span>
+                  <button class="icon-btn danger" onclick="TL.deletePack('${i.id}')">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  // ---------------- MODALS ----------------
+  function renderModal(){
+    let inner = '';
+    const m = state.modal;
+    if(m.type === 'newTrip' || m.type === 'editTrip'){
+      const editing = m.type === 'editTrip';
+      const t = editing ? m.trip : null;
+      inner = `
+        <h3>${editing ? '編輯旅程' : '新增旅程'}</h3>
+        <div class="row2 field">
+          <div><label>國家</label><input id="m-country" placeholder="例如：日本" value="${editing?esc(t.country):''}"></div>
+          <div><label>城市 / 地區</label><input id="m-dest" placeholder="例如：東京" value="${editing?esc(t.destination):''}"></div>
+        </div>
+        <div class="field"><label>旅程名稱（選填）</label><input id="m-name" placeholder="例如：夏日賞味之旅" value="${editing?esc(t.name):''}"></div>
+        <div class="field"><label>旅遊類型</label>
+          <select id="m-triptype">
+            <option value="international" ${editing && t.tripType==='international'?'selected':''}>國外旅遊</option>
+            <option value="domestic" ${editing && t.tripType==='domestic'?'selected':''}>國內旅遊</option>
+          </select>
+        </div>
+        <div class="row2 field">
+          <div><label>出發日期</label><input type="date" id="m-start" value="${editing?t.startDate:''}"></div>
+          <div><label>回程日期</label><input type="date" id="m-end" value="${editing?t.endDate:''}"></div>
+        </div>
+        <div class="row2 field">
+          <div><label>本國幣別</label><input id="m-home" value="${editing?esc(t.homeCurrency):'TWD'}"></div>
+          <div><label>當地幣別</label><input id="m-local" placeholder="例如：JPY" value="${editing?esc(t.localCurrency):''}"></div>
+        </div>
+        <div class="row2 field">
+          <div><label>匯率（1 當地 = ? 本國）</label><input type="number" step="0.0001" id="m-rate" placeholder="例如：0.21" value="${editing?t.exchangeRate:''}"></div>
+          <div><label>預算（本國幣別，選填）</label><input type="number" id="m-budget" placeholder="例如：30000" value="${editing && t.budget!=null ? t.budget : ''}"></div>
+        </div>
+        <div class="field">
+          <label>封面照片（選填）</label>
+          ${editing && t.coverImage ? `
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <img src="${t.coverImage}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">
+              <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-70);">
+                <input type="checkbox" id="m-cover-remove" onchange="document.getElementById('m-cover').disabled=this.checked;"> 移除目前照片
+              </label>
+            </div>` : ''}
+          <input type="file" id="m-cover" accept="image/*">
+        </div>
+        <div class="modal-actions">
+          <button class="btn ghost block" onclick="TL.closeModal()">取消</button>
+          <button class="btn gold block" onclick="${editing ? `TL.updateTrip('${t.id}')` : 'TL.createTrip()'}">${editing ? '儲存變更' : '建立旅程'}</button>
+        </div>`;
+    }else if(m.type === 'newItin' || m.type === 'editItin'){
+      const editing = m.type === 'editItin';
+      const it = editing ? m.item : null;
+      inner = `
+        <h3>${editing ? '編輯行程' : '新增行程'}</h3>
+        <div class="row2 field">
+          <div><label>日期</label><input type="date" id="m-date" value="${editing ? (it.date||'') : (m.date||'')}"></div>
+          <div><label>時間（選填）</label><input type="time" id="m-time" value="${editing ? (it.time||'') : ''}"></div>
+        </div>
+        <div class="field"><label>行程項目</label><input id="m-title" placeholder="例如：淺草寺參拜" value="${editing ? esc(it.title) : ''}"></div>
+        <div class="field">
+          <label>標籤（選填）</label>
+          <select id="m-tag">
+            <option value="" ${editing && !it.tag ? 'selected':''}>不指定</option>
+            ${ITIN_TAGS.map(t=>`<option value="${t.key}" ${editing && it.tag===t.key?'selected':''}>${t.key}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>備註（選填）</label><textarea id="m-note" rows="2" placeholder="地點、交通方式等">${editing ? esc(it.note||'') : ''}</textarea></div>
+        <div class="field">
+          <label>照片（選填）</label>
+          ${editing && it.image ? `
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <img src="${it.image}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">
+              <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-70);">
+                <input type="checkbox" id="m-img-remove" onchange="document.getElementById('m-img').disabled=this.checked;"> 移除目前照片
+              </label>
+            </div>` : ''}
+          <input type="file" id="m-img" accept="image/*">
+        </div>
+        <div class="modal-actions">
+          <button class="btn ghost block" onclick="TL.closeModal()">取消</button>
+          <button class="btn gold block" onclick="${editing ? `TL.updateItin('${it.id}')` : 'TL.createItin()'}">${editing ? '儲存' : '新增'}</button>
+        </div>`;
+    }else if(m.type === 'newExpense'){
+      const trip = currentTrip();
+      const p = m.prefill || {};
+      const payMethod = p.payMethod || 'credit';
+      const bank = p.bank || '國泰';
+      const bankIsOther = !BANKS.includes(bank);
+      inner = `
+        <h3>新增花費</h3>
+        ${p.fromScan ? `<p class="modal-note">已由發票掃描帶入，請確認內容是否正確。</p>` : ''}
+        <div class="row2 field">
+          <div><label>日期</label><input type="date" id="m-date" value="${p.date || new Date().toISOString().slice(0,10)}"></div>
+          <div><label>類別</label>
+            <select id="m-cat">${EXPENSE_CATS.map(c=>`<option value="${c.key}" ${p.category===c.key?'selected':''}>${c.key}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="field"><label>項目說明</label><input id="m-desc" value="${esc(p.desc||'')}" placeholder="例如：拉麵午餐"></div>
+        <div class="field"><label>店家（選填）</label><input id="m-merchant" value="${esc(p.merchant||'')}" placeholder="例如：一蘭拉麵"></div>
+        <div class="row2 field">
+          <div><label>金額</label><input type="number" id="m-amount" value="${p.amount||''}" placeholder="0"></div>
+          <div><label>幣別</label>
+            <select id="m-currency">
+              <option value="${trip.localCurrency}" ${(!p.currency || p.currency===trip.localCurrency)?'selected':''}>${trip.localCurrency}（當地）</option>
+              <option value="${trip.homeCurrency}" ${p.currency===trip.homeCurrency?'selected':''}>${trip.homeCurrency}（本國）</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>付款方式</label>
+          <select id="m-pay" onchange="TL.onPayMethodChange()">
+            ${PAYMENT_METHODS.map(pm=>`<option value="${pm.key}" ${payMethod===pm.key?'selected':''}>${pm.label}</option>`).join('')}
+          </select>
+        </div>
+        <div id="m-credit-fields" style="display:${payMethod==='credit'?'':'none'};">
+          <div class="row2 field">
+            <div><label>銀行</label>
+              <select id="m-bank" onchange="TL.onBankChange()">
+                ${BANKS.map(b=>`<option value="${b}" ${(bankIsOther? b==='其他' : b===bank)?'selected':''}>${b}</option>`).join('')}
+              </select>
+            </div>
+            <div><label>海外手續費（%，選填）</label><input type="number" step="0.01" id="m-fee-pct" value="${p.feePct||''}" placeholder="例如：1.5"></div>
+          </div>
+          <input id="m-bank-custom" style="display:${bankIsOther?'':'none'};margin-bottom:10px;" placeholder="輸入銀行名稱" value="${bankIsOther?esc(bank):''}">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13.5px;margin-bottom:6px;">
+            <input type="checkbox" id="m-rewards" ${p.rewards?'checked':''}> 這筆有回饋（現金回饋 / 點數等）
+          </label>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13.5px;margin:10px 0 6px;">
+          <input type="checkbox" id="m-taxrefund" ${p.taxRefundEligible?'checked':''} onchange="TL.onTaxRefundChange()"> 這筆可退稅
+        </label>
+        <div id="m-taxrefund-fields" class="field" style="display:${p.taxRefundEligible?'':'none'};">
+          <label>退稅狀態</label>
+          <select id="m-taxrefund-status">
+            ${TAX_REFUND_STATUSES.map(s=>`<option value="${s.key}" ${p.taxRefundStatus===s.key?'selected':''}>${s.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn ghost block" onclick="TL.closeModal()">取消</button>
+          <button class="btn gold block" onclick="TL.createExpense()">新增</button>
+        </div>`;
+    }else if(m.type === 'newFlight' || m.type === 'editFlight'){
+      const editing = m.type === 'editFlight';
+      const f = editing ? m.flight : null;
+      const bag = (editing && f.baggage) ? f.baggage : {};
+      inner = `
+        <h3>${editing ? '編輯航班' : '新增航班'}</h3>
+        <div class="row2 field">
+          <div><label>航空公司</label><input id="m-airline" placeholder="例如：長榮航空" value="${editing?esc(f.airline):''}"></div>
+          <div><label>航班編號</label><input id="m-flightno" placeholder="例如：BR198" value="${editing?esc(f.flightNo):''}"></div>
+        </div>
+        <div class="row2 field">
+          <div><label>出發機場</label><input id="m-depa" placeholder="例如：TPE 台北" value="${editing?esc(f.depAirport):''}"></div>
+          <div><label>抵達機場</label><input id="m-arra" placeholder="例如：NRT 東京" value="${editing?esc(f.arrAirport):''}"></div>
+        </div>
+        <div class="row3 field">
+          <div><label>日期</label><input type="date" id="m-date" value="${editing?f.date:''}"></div>
+          <div><label>起飛時間</label><input type="time" id="m-deptime" value="${editing?(f.depTime||''):''}"></div>
+          <div><label>抵達時間</label><input type="time" id="m-arrtime" value="${editing?(f.arrTime||''):''}"></div>
+        </div>
+        <div class="field"><label>航廈（選填）</label>
+          <select id="m-terminal">${TERMINALS.map(t=>`<option value="${t}" ${editing && f.terminal===t ? 'selected':''}>${t}</option>`).join('')}</select>
+        </div>
+        <div class="field">
+          <label>行李（選填）</label>
+          ${BAGGAGE_TYPES.map(t=>`
+            <div class="row2" style="margin-bottom:8px;">
+              <div><label style="font-size:12px;color:var(--ink-70);">${t.label}・件數</label><input type="number" min="0" id="m-bag-${t.key}-count" placeholder="件數" value="${editing && bag[t.key] && bag[t.key].count ? bag[t.key].count : ''}"></div>
+              <div><label style="font-size:12px;color:var(--ink-70);">${t.label}・公斤</label><input type="number" min="0" step="0.1" id="m-bag-${t.key}-kg" placeholder="公斤" value="${editing && bag[t.key] && bag[t.key].kg ? bag[t.key].kg : ''}"></div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="modal-actions">
+          <button class="btn ghost block" onclick="TL.closeModal()">取消</button>
+          <button class="btn gold block" onclick="${editing ? `TL.updateFlight('${f.id}')` : 'TL.createFlight()'}">${editing ? '儲存' : '新增'}</button>
+        </div>`;
+    }else if(m.type === 'newHotel' || m.type === 'editHotel'){
+      const editing = m.type === 'editHotel';
+      const h = editing ? m.hotel : null;
+      inner = `
+        <h3>${editing ? '編輯飯店' : '新增飯店'}</h3>
+        <div class="field"><label>飯店名稱</label><input id="m-hname" placeholder="例如：新宿華盛頓飯店" value="${editing?esc(h.name):''}"></div>
+        <div class="field"><label>地址</label><input id="m-haddr" placeholder="飯店地址" value="${editing?esc(h.address):''}"></div>
+        <div class="row2 field">
+          <div><label>入住日期</label><input type="date" id="m-cin-date" value="${editing?h.checkinDate:''}"></div>
+          <div><label>入住時間</label><input type="time" id="m-cin-time" value="${editing?(h.checkinTime||''):''}"></div>
+        </div>
+        <div class="row2 field">
+          <div><label>退房日期</label><input type="date" id="m-cout-date" value="${editing?h.checkoutDate:''}"></div>
+          <div><label>退房時間</label><input type="time" id="m-cout-time" value="${editing?(h.checkoutTime||''):''}"></div>
+        </div>
+        <div class="row2 field">
+          <div><label>訂房網站</label>
+            <select id="m-hsite">${BOOKING_SITES.map(s=>`<option value="${s}" ${editing && h.bookingSite===s ? 'selected':''}>${s}</option>`).join('')}</select>
+          </div>
+          <div><label>聯絡電話（選填）</label><input type="tel" id="m-hphone" placeholder="飯店訂房 / 櫃檯電話" value="${editing?esc(h.phone||''):''}"></div>
+        </div>
+        <div class="field"><label>訂房確認碼（選填）</label><input id="m-conf" placeholder="Booking.com / Agoda 訂單編號" value="${editing?esc(h.confirmationNo||''):''}"></div>
+        <div class="modal-actions">
+          <button class="btn ghost block" onclick="TL.closeModal()">取消</button>
+          <button class="btn gold block" onclick="${editing ? `TL.updateHotel('${h.id}')` : 'TL.createHotel()'}">${editing ? '儲存' : '新增'}</button>
+        </div>`;
+    }else if(m.type === 'newDocument'){
+      inner = `
+        <h3>新增證件 / 會員資料</h3>
+        <div class="field"><label>類別</label>
+          <select id="m-doc-cat" onchange="document.getElementById('m-doc-cat-custom-wrap').style.display = this.value==='自訂' ? 'block':'none';">
+            ${DOC_CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}
+            <option value="自訂">自訂</option>
+          </select>
+        </div>
+        <div class="field" id="m-doc-cat-custom-wrap" style="display:none;">
+          <label>自訂類別名稱</label><input id="m-doc-cat-custom" placeholder="例如：國際駕照">
+        </div>
+        <div class="field"><label>名稱 / 標題</label><input id="m-doc-title" placeholder="例如：中華民國護照、長榮航空 無限萬哩遊"></div>
+        <div class="row2 field">
+          <div><label>證件 / 會員編號（選填）</label><input id="m-doc-number" placeholder="編號"></div>
+          <div><label>效期 / 到期日（選填）</label><input type="date" id="m-doc-expiry"></div>
+        </div>
+        <div class="field"><label>備註（選填）</label><input id="m-doc-note" placeholder="例如：卡等、發卡國、聯盟等"></div>
+        <div class="modal-actions">
+          <button class="btn ghost block" onclick="TL.closeModal()">取消</button>
+          <button class="btn gold block" onclick="TL.createDocument()">新增</button>
+        </div>`;
+    }
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.id = 'tl-modal-overlay';
+    overlay.innerHTML = `<div class="modal">${state.scanning ? `<div class="scan-status"><span class="spin"></span> 正在辨識發票內容…</div>` : ''}${inner}</div>`;
+    overlay.addEventListener('click', (e)=>{ if(e.target.id==='tl-modal-overlay') TL.closeModal(); });
+    document.getElementById('travel-log-root').appendChild(overlay);
+  }
+
+  // ---------------- ACTIONS ----------------
+  const TL = {
+    async init(){
+      await Promise.all([loadTrips(), loadDocuments()]);
+      state.loading = false;
+      render();
+    },
+    async openTrip(id){
+      state.tripId = id;
+      state.view = 'trip';
+      state.tab = 'itinerary';
+      state.loading = true;
+      render();
+      await loadTripData(id);
+      state.loading = false;
+      render();
+    },
+    async setView(view){
+      state.view = view;
+      if(view === 'frequentFlights'){
+        state.airlineStatsLoading = true;
+        render();
+        state.airlineStats = await computeAirlineStats();
+        state.airlineStatsLoading = false;
+      }
+      render();
+    },
+    goHome(){ state.view = 'home'; state.tripId = null; render(); },
+    setTab(tab){ state.tab = tab; render(); },
+    openModal(type, extra){ state.modal = {type, date: extra}; state.scanError = null; render(); },
+    closeModal(){
+      state.modal = null; state.scanning = false;
+      const o = document.getElementById('tl-modal-overlay');
+      if(o) o.remove();
+    },
+
+    async createTrip(){
+      const country = document.getElementById('m-country').value.trim();
+      const dest = document.getElementById('m-dest').value.trim();
+      const name = document.getElementById('m-name').value.trim() || dest;
+      const tripType = document.getElementById('m-triptype').value;
+      const start = document.getElementById('m-start').value;
+      const end = document.getElementById('m-end').value;
+      const home = document.getElementById('m-home').value.trim() || 'TWD';
+      const local = document.getElementById('m-local').value.trim() || 'USD';
+      const rate = parseFloat(document.getElementById('m-rate').value) || 1;
+      const budget = document.getElementById('m-budget').value;
+      const coverFile = document.getElementById('m-cover').files[0];
+      if(!country || !dest || !start || !end){ alert('請填寫國家、城市與日期'); return; }
+
+      let coverImage = null;
+      if(coverFile){
+        try{ coverImage = await compressImage(coverFile, 900, 0.72); }
+        catch(e){ console.error('cover image failed', e); }
+      }
+
+      const trip = {
+        id: uid(), country, destination:dest, name, tripType, startDate:start, endDate:end,
+        homeCurrency:home, localCurrency:local, exchangeRate:rate,
+        budget: budget ? parseFloat(budget) : null,
+        coverImage
+      };
+      state.trips.push(trip);
+      await saveTrips();
+      this.closeModal();
+      await this.openTrip(trip.id);
+    },
+
+    openEditTrip(id){
+      const t = state.trips.find(tr=>tr.id===id);
+      if(!t) return;
+      state.modal = {type:'editTrip', trip: t};
+      state.scanError = null;
+      render();
+    },
+    async updateTrip(id){
+      const trip = state.trips.find(tr=>tr.id===id);
+      if(!trip) return;
+      const country = document.getElementById('m-country').value.trim();
+      const dest = document.getElementById('m-dest').value.trim();
+      const name = document.getElementById('m-name').value.trim() || dest;
+      const tripType = document.getElementById('m-triptype').value;
+      const start = document.getElementById('m-start').value;
+      const end = document.getElementById('m-end').value;
+      const home = document.getElementById('m-home').value.trim() || 'TWD';
+      const local = document.getElementById('m-local').value.trim() || 'USD';
+      const rate = parseFloat(document.getElementById('m-rate').value) || 1;
+      const budget = document.getElementById('m-budget').value;
+      const coverFile = document.getElementById('m-cover').files[0];
+      const removeCoverEl = document.getElementById('m-cover-remove');
+      const removeCover = removeCoverEl && removeCoverEl.checked;
+      if(!country || !dest || !start || !end){ alert('請填寫國家、城市與日期'); return; }
+
+      let coverImage = trip.coverImage || null;
+      if(coverFile){
+        try{ coverImage = await compressImage(coverFile, 900, 0.72); }
+        catch(e){ console.error('cover image failed', e); }
+      }else if(removeCover){
+        coverImage = null;
+      }
+
+      Object.assign(trip, {
+        country, destination:dest, name, tripType, startDate:start, endDate:end,
+        homeCurrency:home, localCurrency:local, exchangeRate:rate,
+        budget: budget ? parseFloat(budget) : null,
+        coverImage
+      });
+      await saveTrips();
+      this.closeModal();
+      render();
+    },
+
+    async createItin(){
+      const date = document.getElementById('m-date').value;
+      const time = document.getElementById('m-time').value;
+      const title = document.getElementById('m-title').value.trim();
+      const tag = document.getElementById('m-tag').value;
+      const note = document.getElementById('m-note').value.trim();
+      const imgFile = document.getElementById('m-img').files[0];
+      if(!date || !title){ alert('請填寫日期與行程項目'); return; }
+      let image = null;
+      if(imgFile){
+        try{ image = await compressImage(imgFile, 900, 0.72); }
+        catch(e){ console.error('itinerary image failed', e); }
+      }
+      state.tripData.itinerary.push({id:uid(), date, time, title, tag, note, image});
+      await saveTripData(); this.closeModal(); render();
+    },
+    openEditItin(id){
+      const it = state.tripData.itinerary.find(i=>i.id===id);
+      if(!it) return;
+      state.modal = {type:'editItin', item: it};
+      state.scanError = null;
+      render();
+    },
+    async updateItin(id){
+      const it = state.tripData.itinerary.find(i=>i.id===id);
+      if(!it) return;
+      const date = document.getElementById('m-date').value;
+      const time = document.getElementById('m-time').value;
+      const title = document.getElementById('m-title').value.trim();
+      const tag = document.getElementById('m-tag').value;
+      const note = document.getElementById('m-note').value.trim();
+      const imgFile = document.getElementById('m-img').files[0];
+      const removeImgEl = document.getElementById('m-img-remove');
+      const removeImg = removeImgEl && removeImgEl.checked;
+      if(!date || !title){ alert('請填寫日期與行程項目'); return; }
+      let image = it.image || null;
+      if(imgFile){
+        try{ image = await compressImage(imgFile, 900, 0.72); }
+        catch(e){ console.error('itinerary image failed', e); }
+      }else if(removeImg){
+        image = null;
+      }
+      Object.assign(it, {date, time, title, tag, note, image});
+      await saveTripData(); this.closeModal(); render();
+    },
+    async deleteItin(id){
+      state.tripData.itinerary = state.tripData.itinerary.filter(i=>i.id!==id);
+      await saveTripData(); render();
+    },
+
+    onPayMethodChange(){
+      const v = document.getElementById('m-pay').value;
+      const el = document.getElementById('m-credit-fields');
+      if(el) el.style.display = v === 'credit' ? '' : 'none';
+    },
+    onBankChange(){
+      const v = document.getElementById('m-bank').value;
+      const el = document.getElementById('m-bank-custom');
+      if(el) el.style.display = v === '其他' ? '' : 'none';
+    },
+    onTaxRefundChange(){
+      const checked = document.getElementById('m-taxrefund').checked;
+      const el = document.getElementById('m-taxrefund-fields');
+      if(el) el.style.display = checked ? '' : 'none';
+    },
+
+    async createExpense(){
+      const date = document.getElementById('m-date').value;
+      const category = document.getElementById('m-cat').value;
+      const desc = document.getElementById('m-desc').value.trim();
+      const merchant = document.getElementById('m-merchant').value.trim();
+      const amount = parseFloat(document.getElementById('m-amount').value);
+      const currency = document.getElementById('m-currency').value;
+      const payMethod = document.getElementById('m-pay').value;
+      if(!date || !desc || !amount){ alert('請填寫完整花費資訊'); return; }
+
+      let bank = null, rewards = false, feePct = null;
+      if(payMethod === 'credit'){
+        bank = document.getElementById('m-bank').value;
+        if(bank === '其他'){ bank = document.getElementById('m-bank-custom').value.trim() || '其他'; }
+        rewards = document.getElementById('m-rewards').checked;
+        const feeVal = document.getElementById('m-fee-pct').value;
+        feePct = feeVal ? parseFloat(feeVal) : null;
+      }
+      const taxRefundEligible = document.getElementById('m-taxrefund').checked;
+      const taxRefundStatus = taxRefundEligible ? document.getElementById('m-taxrefund-status').value : null;
+
+      state.tripData.expenses.push({
+        id:uid(), date, category, desc, merchant, amount, currency,
+        payMethod, bank, rewards, feePct, taxRefundEligible, taxRefundStatus
+      });
+      await saveTripData(); this.closeModal(); render();
+    },
+    async deleteExpense(id){
+      state.tripData.expenses = state.tripData.expenses.filter(e=>e.id!==id);
+      await saveTripData(); render();
+    },
+
+    async scanReceipt(inputEl){
+      const file = inputEl.files && inputEl.files[0];
+      if(!file) return;
+      inputEl.value = '';
+      const trip = currentTrip();
+      state.scanning = true; state.scanError = null;
+      state.modal = {type:'newExpense', prefill:{}};
+      render();
+      try{
+        const base64 = await new Promise((res, rej)=>{
+          const r = new FileReader();
+          r.onload = () => res(r.result.split(',')[1]);
+          r.onerror = () => rej(new Error('讀取圖片失敗'));
+          r.readAsDataURL(file);
+        });
+        const mediaType = file.type || 'image/jpeg';
+        const prompt = `請閱讀這張發票或收據圖片，並「只」回傳一個 JSON 物件，不要有其他文字或 Markdown 符號，格式如下：
+{"desc": "商店或品項名稱", "date": "YYYY-MM-DD（若無法辨識請用今天日期 ${new Date().toISOString().slice(0,10)}）", "amount": 數字（總金額，不含幣別符號）, "currency": "三碼幣別代碼，若無法判斷請用 ${trip.localCurrency}", "category": "從這幾個類別選一個最符合的：餐飲、交通、住宿、購物、門票、其他"}`;
+
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-6",
+            max_tokens: 1000,
+            messages: [{ role: "user", content: [
+              { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+              { type: "text", text: prompt }
+            ]}]
+          })
+        });
+        const data = await response.json();
+        const textBlock = (data.content || []).map(b=>b.text||'').join('');
+        const clean = textBlock.replace(/```json|```/g,'').trim();
+        const parsed = JSON.parse(clean);
+
+        state.scanning = false;
+        state.modal = { type:'newExpense', prefill:{
+          desc: parsed.desc || '', date: parsed.date || new Date().toISOString().slice(0,10),
+          amount: parsed.amount || '', currency: parsed.currency || trip.localCurrency,
+          category: EXPENSE_CATS.some(c=>c.key===parsed.category) ? parsed.category : '其他',
+          fromScan: true
+        }};
+        render();
+      }catch(err){
+        console.error(err);
+        state.scanning = false;
+        state.scanError = '發票辨識失敗，請手動輸入花費內容。';
+        state.modal = {type:'newExpense', prefill:{}};
+        render();
+      }
+    },
+
+    convertFromLocal(){
+      const trip = currentTrip();
+      const v = parseFloat(document.getElementById('tl-conv-local').value);
+      document.getElementById('tl-conv-home').value = isNaN(v) ? '' : (v*trip.exchangeRate).toFixed(2);
+    },
+    convertFromHome(){
+      const trip = currentTrip();
+      const v = parseFloat(document.getElementById('tl-conv-home').value);
+      document.getElementById('tl-conv-local').value = isNaN(v) ? '' : (v/trip.exchangeRate).toFixed(2);
+    },
+    async updateRate(val){
+      const rate = parseFloat(val);
+      if(isNaN(rate) || rate<=0) return;
+      const trip = currentTrip();
+      trip.exchangeRate = rate;
+      await saveTrips(); render();
+    },
+
+    async addNote(important){
+      const input = document.getElementById('tl-note-input');
+      const text = input.value.trim();
+      if(!text) return;
+      state.tripData.notes.push({id:uid(), text, important});
+      await saveTripData(); render();
+    },
+    async deleteNote(id){
+      state.tripData.notes = state.tripData.notes.filter(n=>n.id!==id);
+      await saveTripData(); render();
+    },
+
+    async addPack(){
+      const input = document.getElementById('tl-pack-input');
+      const cat = document.getElementById('tl-pack-cat').value;
+      const text = input.value.trim();
+      if(!text) return;
+      state.tripData.packing.push({id:uid(), text, category:cat, checked:false});
+      await saveTripData(); render();
+    },
+    async togglePack(id){
+      const item = state.tripData.packing.find(i=>i.id===id);
+      if(item){ item.checked = !item.checked; await saveTripData(); render(); }
+    },
+    async deletePack(id){
+      state.tripData.packing = state.tripData.packing.filter(i=>i.id!==id);
+      await saveTripData(); render();
+    },
+
+    async createFlight(){
+      const airline = document.getElementById('m-airline').value.trim();
+      const flightNo = document.getElementById('m-flightno').value.trim();
+      const depAirport = document.getElementById('m-depa').value.trim();
+      const arrAirport = document.getElementById('m-arra').value.trim();
+      const date = document.getElementById('m-date').value;
+      const depTime = document.getElementById('m-deptime').value;
+      const arrTime = document.getElementById('m-arrtime').value;
+      const terminal = document.getElementById('m-terminal').value;
+      const baggage = readBaggageFields();
+      if(!depAirport || !arrAirport || !date){ alert('請填寫機場與日期'); return; }
+      state.tripData.flights.push({id:uid(), airline, flightNo, depAirport, arrAirport, date, depTime, arrTime, terminal, baggage});
+      await saveTripData(); this.closeModal(); render();
+    },
+    openEditFlight(id){
+      const f = state.tripData.flights.find(fl=>fl.id===id);
+      if(!f) return;
+      state.modal = {type:'editFlight', flight: f};
+      state.scanError = null;
+      render();
+    },
+    async updateFlight(id){
+      const f = state.tripData.flights.find(fl=>fl.id===id);
+      if(!f) return;
+      const airline = document.getElementById('m-airline').value.trim();
+      const flightNo = document.getElementById('m-flightno').value.trim();
+      const depAirport = document.getElementById('m-depa').value.trim();
+      const arrAirport = document.getElementById('m-arra').value.trim();
+      const date = document.getElementById('m-date').value;
+      const depTime = document.getElementById('m-deptime').value;
+      const arrTime = document.getElementById('m-arrtime').value;
+      const terminal = document.getElementById('m-terminal').value;
+      const baggage = readBaggageFields();
+      if(!depAirport || !arrAirport || !date){ alert('請填寫機場與日期'); return; }
+      Object.assign(f, {airline, flightNo, depAirport, arrAirport, date, depTime, arrTime, terminal, baggage});
+      await saveTripData(); this.closeModal(); render();
+    },
+    async deleteFlight(id){
+      state.tripData.flights = state.tripData.flights.filter(f=>f.id!==id);
+      await saveTripData(); render();
+    },
+
+    async createHotel(){
+      const name = document.getElementById('m-hname').value.trim();
+      const address = document.getElementById('m-haddr').value.trim();
+      const checkinDate = document.getElementById('m-cin-date').value;
+      const checkinTime = document.getElementById('m-cin-time').value;
+      const checkoutDate = document.getElementById('m-cout-date').value;
+      const checkoutTime = document.getElementById('m-cout-time').value;
+      const bookingSite = document.getElementById('m-hsite').value;
+      const phone = document.getElementById('m-hphone').value.trim();
+      const confirmationNo = document.getElementById('m-conf').value.trim();
+      if(!name || !checkinDate || !checkoutDate){ alert('請填寫飯店名稱與入住/退房日期'); return; }
+      state.tripData.hotels.push({id:uid(), name, address, checkinDate, checkinTime, checkoutDate, checkoutTime, bookingSite, phone, confirmationNo});
+      await saveTripData(); this.closeModal(); render();
+    },
+    openEditHotel(id){
+      const h = state.tripData.hotels.find(ht=>ht.id===id);
+      if(!h) return;
+      state.modal = {type:'editHotel', hotel: h};
+      state.scanError = null;
+      render();
+    },
+    async updateHotel(id){
+      const h = state.tripData.hotels.find(ht=>ht.id===id);
+      if(!h) return;
+      const name = document.getElementById('m-hname').value.trim();
+      const address = document.getElementById('m-haddr').value.trim();
+      const checkinDate = document.getElementById('m-cin-date').value;
+      const checkinTime = document.getElementById('m-cin-time').value;
+      const checkoutDate = document.getElementById('m-cout-date').value;
+      const checkoutTime = document.getElementById('m-cout-time').value;
+      const bookingSite = document.getElementById('m-hsite').value;
+      const phone = document.getElementById('m-hphone').value.trim();
+      const confirmationNo = document.getElementById('m-conf').value.trim();
+      if(!name || !checkinDate || !checkoutDate){ alert('請填寫飯店名稱與入住/退房日期'); return; }
+      Object.assign(h, {name, address, checkinDate, checkinTime, checkoutDate, checkoutTime, bookingSite, phone, confirmationNo});
+      await saveTripData(); this.closeModal(); render();
+    },
+    async deleteHotel(id){
+      state.tripData.hotels = state.tripData.hotels.filter(h=>h.id!==id);
+      await saveTripData(); render();
+    },
+
+    async createDocument(){
+      let category = document.getElementById('m-doc-cat').value;
+      if(category === '自訂'){
+        category = document.getElementById('m-doc-cat-custom').value.trim() || '自訂';
+      }
+      const title = document.getElementById('m-doc-title').value.trim();
+      const number = document.getElementById('m-doc-number').value.trim();
+      const expiry = document.getElementById('m-doc-expiry').value;
+      const note = document.getElementById('m-doc-note').value.trim();
+      if(!title){ alert('請填寫名稱 / 標題'); return; }
+      state.documents.push({id:uid(), category, title, number, expiry, note});
+      await saveDocuments(); this.closeModal(); render();
+    },
+    async deleteDocument(id){
+      state.documents = state.documents.filter(d=>d.id!==id);
+      await saveDocuments(); render();
+    }
+  };
+  window.TL = TL;
+  TL.init();
+})();
+</script>
