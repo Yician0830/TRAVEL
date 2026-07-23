@@ -481,12 +481,13 @@
   //      allow read, write: if request.auth != null && request.auth.uid == userId;
   //    }
   const firebaseConfig = {
-    apiKey: "請填入你的-API-KEY",
-    authDomain: "請填入你的專案.firebaseapp.com",
-    projectId: "請填入你的-PROJECT-ID",
-    storageBucket: "請填入你的專案.appspot.com",
-    messagingSenderId: "請填入你的-SENDER-ID",
-    appId: "請填入你的-APP-ID"
+    apiKey: "AIzaSyB9BsfwOP7AVLMj-eOMeKnI1AHU2tvQv04",
+    authDomain: "mytravel-b6975.firebaseapp.com",
+    projectId: "mytravel-b6975",
+    storageBucket: "mytravel-b6975.firebasestorage.app",
+    messagingSenderId: "945278851664",
+    appId: "1:945278851664:web:ac4a02e0fa32d66a53cf55",
+    measurementId: "G-9NCY9MK3TS"
   };
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
@@ -1697,7 +1698,7 @@
       }catch(e){
         console.error(e);
         state.loading = false;
-        state.authError = '登入失敗，請再試一次。';
+        state.authError = '登入失敗：' + (e && (e.code || e.message) ? (e.code || e.message) : '請再試一次。');
         render();
       }
     },
